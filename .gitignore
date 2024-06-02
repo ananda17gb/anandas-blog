@@ -24,4 +24,6 @@ dist-ssr
 *.sw?
 
 .vercel
-*.env
+.env
+.env.test
+.env*.local
