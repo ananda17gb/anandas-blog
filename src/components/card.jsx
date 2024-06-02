@@ -1,34 +1,43 @@
-export default function Card({ onClickBlogContent, onClickEditBlog }) {
+import PropTypes from "prop-types";
+
+export default function Card({
+  onClickBlogContent,
+  title,
+  description,
+  image,
+  blogData,
+}) {
   return (
-    <>
-      <div className="card">
-        <div
-          className="card-image"
-          class="w-72 h-48 bg-[#B4B4B4] rounded"
-        ></div>
-        <div className="carddesc" class="w-72 h-36 bg-[#EDEDED] rounded">
-          <button
-            onClick={onClickBlogContent}
-            className="judul"
-            class="pl-3 pt-2 font-bold text-2xl"
-          >
-            Judul Blog
-          </button>
-          <div className="desc" class="pl-3 text-base leading-7">
-            Pada blog kali ini kami membahas tentang suatuh hal, hal ini sering
-            ju...
-          </div>
-          <hr class="my-2 mx-3 border-1 border-[#0000004D]" />
-          <div className="link" class="flex justify-between">
-            <button onClick={onClickEditBlog} href="" class="pl-5 underline">
-              Edit
-            </button>
-            <button href="" class="pr-5   underline">
-              Hapus
-            </button>
-          </div>
+    <div className="card grid rounded-lg">
+      <button
+        onClick={() => onClickBlogContent(blogData)}
+        className="relative w-96 h-48 bg-[#B4B4B4] p-0 overflow-hidden"
+      >
+        <img
+          src={image}
+          alt={title}
+          className="absolute inset-0 w-full h-full object-contain transition-transform duration-200 hover:scale-110"
+        />
+      </button>
+      <div className="w-96 h-36 bg-[#EDEDED]">
+        <button
+          onClick={() => onClickBlogContent(blogData)}
+          className="pl-2 pt-1 pb-1 pr-1 text-xl font-semibold hover:underline"
+        >
+          <div className="line-clamp-1">{title}</div>
+        </button>
+        <div className="pl-3 pt-1 pb-1 pr-1 text-base leading-7 line-clamp-3 row-start-2 border-t-2 border-[#31313184] mx-2">
+          {description}
         </div>
       </div>
-    </>
+    </div>
   );
 }
+
+Card.propTypes = {
+  onClickBlogContent: PropTypes.func.isRequired,
+  title: PropTypes.string.isRequired,
+  description: PropTypes.string.isRequired,
+  image: PropTypes.string,
+  blogData: PropTypes.object.isRequired,
+};
