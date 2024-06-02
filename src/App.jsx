@@ -8,18 +8,13 @@ import EditBlog from "./page/EditBlog.jsx";
 import {
   collection,
   getDocs,
-  getDoc,
   addDoc,
   setDoc,
   deleteDoc,
   doc,
 } from "firebase/firestore";
-import {
-  getDownloadURL,
-  uploadBytes,
-  ref,
-  deleteObject,
-} from "firebase/storage";
+import { getDownloadURL, uploadBytes, ref } from "firebase/storage";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 
 function App() {
   // ! Buat pindah" page
@@ -163,6 +158,7 @@ function App() {
           />
         </>
       )}
+      <SpeedInsights />
     </div>
   );
 }

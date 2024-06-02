@@ -47,12 +47,12 @@ export default function ViewBlog({
         </p>
         <p className="col-start-3 row-start-2 ml-8">{blog.date}</p>
         <div className="col-start-4 row-start-2 flex justify-end space-x-2 mr-8">
-          <a href="" className="underline" onClick={onClickEditBlog}>
+          <a href="" className="hover:underline" onClick={onClickEditBlog}>
             Edit
           </a>
           <span>|</span>
-          <a href="" className="underline" onClick={handleDeleteData}>
-            Hapus
+          <a href="" className="hover:underline" onClick={handleDeleteData}>
+            Delete
           </a>
         </div>
         <p className="col-start-3 col-span-2 ml-8 mr-8 overflow-auto pb-9 text-justify whitespace-pre-line indent-8">

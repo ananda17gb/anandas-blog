@@ -1,16 +1,19 @@
+import PropTypes from "prop-types";
 function Header({ onClickBuatBlog }) {
   return (
     <>
       <div className="grid grid-cols-2 ">
         <div className="self-center">
-          <button className="my-6 ml-9 text-2xl font-bold">Blog GDSC Telyu</button>
+          <button className="my-6 ml-9 text-2xl font-bold">
+            Ananda&apos;s Blog
+          </button>
         </div>
         <div className="flex justify-end  self-center">
           <button
             className="my-6 mr-8 bg-[#D2D2D2] rounded py-2 px-6 font-bold"
             onClick={onClickBuatBlog}
           >
-            Buat Blog
+            Create Blog
           </button>
         </div>
       </div>
@@ -18,5 +21,9 @@ function Header({ onClickBuatBlog }) {
     </>
   );
 }
+
+Header.propTypes = {
+  onClickBuatBlog: PropTypes.func.isRequired,
+};
 
 export default Header;

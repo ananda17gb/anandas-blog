@@ -24,7 +24,7 @@ function BackConfirm({ handleClickBack, handleAddData, handleUpdate, isEdit }) {
             onClick={handleClickBack}
             className="my-6 ml-9 text-2xl font-bold "
           >
-            Kembali
+            Go Back
           </button>
         </div>
         <div className="flex justify-end  self-center">
@@ -32,7 +32,7 @@ function BackConfirm({ handleClickBack, handleAddData, handleUpdate, isEdit }) {
             onClick={isEdit ? handleUpdateAndFinish : handleConfirmAndFinish}
             className="my-6 mr-8 bg-[#D2D2D2] rounded py-2 px-6 font-bold"
           >
-            {isEdit ? "Ubah & Selesai" : "Konfirmasi & Selesai"}
+            {isEdit ? "Change & Done" : "Confirm & Done"}
           </button>
         </div>
       </div>

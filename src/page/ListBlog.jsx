@@ -16,12 +16,7 @@ export default function ListBlog({
       <br />
       <br />
       <div>
-        <h1 className="text-center font-bold text-4xl">
-          Selamat Datang di Blog Kami!
-        </h1>
-        <p className="mt-2 text-center text-base">
-          Ini adalah tempat kami menulis blog.
-        </p>
+        <h1 className="text-center font-bold text-4xl">Welcome to My Blog</h1>
       </div>
       <div className="mt-10 flex justify-around flex-wrap">
         {sortedData.map((item) => (

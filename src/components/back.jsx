@@ -8,7 +8,7 @@ function Back({ handleClickBack }) {
             onClick={handleClickBack}
             className="my-6 ml-9 text-2xl font-bold "
           >
-            Kembali
+            Go Back
           </button>
         </div>
       </div>
