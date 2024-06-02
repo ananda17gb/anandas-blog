@@ -1,6 +1,6 @@
 # My Blog Project
 
-My first blog project using React through Vite and Firebase (Firestore Database and Firebase storage). You can access the website through this [link](https://anandaawblog.vercel.app) or if you want to see the Vercel project page you can use [this](https://vercel.com/ananda-arti-widigdos-projects/anandablogproject).
+My first blog project using React through Vite and Firebase (Firestore Database and Firebase storage). You can access the website through this [link](https://anandaawblog.vercel.app) or if you want to see the Vercel project page you can use this [link](https://vercel.com/ananda-arti-widigdos-projects/anandablogproject).
 
 ## Installation
 
