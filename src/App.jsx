@@ -14,7 +14,7 @@ import {
   doc,
 } from "firebase/firestore";
 import { getDownloadURL, uploadBytes, ref } from "firebase/storage";
-import { SpeedInsights } from "@vercel/speed-insights/react";
+// import { SpeedInsights } from "@vercel/speed-insights/react";
 
 function App() {
   // ! Buat pindah" page
@@ -158,7 +158,7 @@ function App() {
           />
         </>
       )}
-      <SpeedInsights />
+      {/* <SpeedInsights /> */}
     </div>
   );
 }
