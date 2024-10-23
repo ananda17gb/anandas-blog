@@ -1,5 +1,6 @@
-import Header from "../components/header.jsx";
-import Card from "../components/card.jsx";
+import Header from "../components/header";
+import Footer from "../components/footer";
+import Card from "../components/card";
 import PropTypes from "prop-types";
 export default function ListBlog({
   onClickBuatBlog,
@@ -13,24 +14,32 @@ export default function ListBlog({
   return (
     <>
       <Header onClickBuatBlog={onClickBuatBlog} />
-      <br />
-      <br />
-      <div>
-        <h1 className="text-center font-bold text-4xl">Welcome to My Blog</h1>
+      <div
+        id="home"
+        className="flex flex-col justify-center items-center h-screen bg-[#F1F1F1]"
+      >
+        <h1 className="text-[#232323] text-[64px] font-bold">
+          Welcome to our blog page!
+        </h1>
+        <h1 className="text-[#969696] text-[40px]">Please enjoy our blogs</h1>
       </div>
-      <div className="mt-10 flex justify-around flex-wrap">
-        {sortedData.map((item) => (
-          <div key={item.id}>
-            <Card
-              title={item.title}
-              description={item.description}
-              image={item.image}
-              onClickBlogContent={onClickBlogContent}
-              blogData={item}
-            />
-          </div>
-        ))}
+      <div className="my-10 h-full">
+        <h1 className="pl-52 font-bold text-4xl">Latest Post</h1>
+        <div className="mt-20 flex flex-wrap justify-center gap-20">
+          {sortedData.map((item) => (
+            <div key={item.id}>
+              <Card
+                title={item.title}
+                description={item.description}
+                image={item.image}
+                onClickBlogContent={onClickBlogContent}
+                blogData={item}
+              />
+            </div>
+          ))}
+        </div>
       </div>
+      <Footer />
     </>
   );
 }

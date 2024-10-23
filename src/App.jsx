@@ -116,7 +116,7 @@ function App() {
   // ! STORAGE UPLOAD IMAGE END
 
   return (
-    <div>
+    <div className="font-montserrat">
       {page === "create" && (
         <CreateBlog
           handleClickBack={handleClickBackHome}
