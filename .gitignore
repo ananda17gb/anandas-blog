@@ -26,8 +26,6 @@ dist-ssr
 .vercel
 .env
 .env.test
-<<<<<<< HEAD
 .env*.local
-=======
-.env*.local
->>>>>>> 995b15bf6527cc36b335daaa08a250e0af917940
+.next
+next-env.d.ts
