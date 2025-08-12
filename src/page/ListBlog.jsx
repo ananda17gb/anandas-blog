@@ -1,61 +1,67 @@
-import Header from "../components/header";
-import Footer from "../components/footer";
-import Card from "../components/card";
-import PropTypes from "prop-types";
-export default function ListBlog({
-  onClickBuatBlog,
-  onClickBlogContent,
+import PropTypes from 'prop-types';
+import Card from '../components/Card';
+import Header from '../components/Header';
+function ListBlog({
   data,
+  onClickCard,
+  onDelete,
+  onEdit,
+  onClickBuatBlog,
+  onClickTitle,
 }) {
-  const sortedData = data
-    .slice()
-    .sort((a, b) => new Date(b.date) - new Date(a.date));
-
   return (
     <>
-      <Header onClickBuatBlog={onClickBuatBlog} />
-      <div
-        id="home"
-        className="flex flex-col justify-center items-center h-screen bg-[#F1F1F1]"
-      >
-        <h1 className="text-[#232323] text-[64px] font-bold">
-          Welcome to our blog page!
+      <Header onClickBuatBlog={onClickBuatBlog} onClickTitle={onClickTitle} />
+
+      <section id='head' className='my-16  text-center'>
+        <h1 className='text-4xl font-bold mb-2'>
+          Selamat Datang di Blog Saya!
         </h1>
-        <h1 className="text-[#969696] text-[40px]">Please enjoy our blogs</h1>
-      </div>
-      <div className="my-10 h-full">
-        <h1 className="pl-52 font-bold text-4xl">Latest Post</h1>
-        <div className="mt-20 flex flex-wrap justify-center gap-20">
-          {sortedData.map((item) => (
-            <div key={item.id}>
+        <p>Ini adalah tempat saya menulis blog.</p>
+      </section>
+      <div className='grid grid-cols-2 xl:grid-cols-4 gap-4 p-9 '>
+        {
+          // Looping data untuk membuat Card
+          // menggunakan Array map
+          // https://www.w3schools.com/jsref/jsref_map.asp
+          data.map((item) => (
+            <button
+              key={item.id}
+              className='text-left'
+              onClick={() => {
+                onClickCard(item.id);
+              }}
+            >
               <Card
+                id={item.id}
+                onDelete={onDelete}
+                onEdit={onEdit}
+                image={item.image}
                 title={item.title}
                 description={item.description}
-                image={item.image}
-                onClickBlogContent={onClickBlogContent}
-                blogData={item}
               />
-            </div>
-          ))}
-        </div>
+            </button>
+          ))
+        }
       </div>
-      <Footer />
     </>
   );
 }
 
 ListBlog.propTypes = {
-  onClickBuatBlog: PropTypes.func.isRequired,
-  onClickBlogContent: PropTypes.func.isRequired,
-  onClickEditBlog: PropTypes.func.isRequired,
   data: PropTypes.arrayOf(
     PropTypes.shape({
-      id: PropTypes.string.isRequired,
+      id: PropTypes.number.isRequired,
       title: PropTypes.string.isRequired,
       description: PropTypes.string.isRequired,
-      image: PropTypes.string,
-      date: PropTypes.string.isRequired,
-      content: PropTypes.string.isRequired,
+      image: PropTypes.string.isRequired,
     })
   ).isRequired,
+  onClickCard: PropTypes.func.isRequired,
+  onDelete: PropTypes.func.isRequired,
+  onEdit: PropTypes.func.isRequired,
+  onClickBuatBlog: PropTypes.func.isRequired,
+  onClickTitle: PropTypes.func.isRequired,
 };
+
+export default ListBlog;

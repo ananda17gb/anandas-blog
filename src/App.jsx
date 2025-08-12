@@ -1,147 +1,143 @@
 import { useEffect, useState } from "react";
-import ListBlog from "./page/ListBlog.jsx";
-import ViewBlog from "./page/ViewBlog.jsx";
-import CreateBlog from "./page/CreateBlog.jsx";
-import { db } from "./firebase-config";
-import { storage } from "./firebase-config";
-import EditBlog from "./page/EditBlog.jsx";
+import CreateBlog from "./page/CreateBlog";
+import ViewBlog from "./page/ViewBlog";
+import ListBlog from "./page/ListBlog";
+import { db } from "./configs/firebase";
 import {
-  collection,
-  getDocs,
+  Timestamp,
   addDoc,
-  setDoc,
+  collection,
   deleteDoc,
   doc,
+  getDocs,
+  setDoc,
 } from "firebase/firestore";
-import { getDownloadURL, uploadBytes, ref } from "firebase/storage";
-// import { SpeedInsights } from "@vercel/speed-insights/react";
 
 function App() {
-  // ! Buat pindah" page
   const [page, setPage] = useState("home");
+  const [editId, setEditId] = useState(null);
+  const [viewId, setViewId] = useState(null);
 
-  const handleClickBackHome = () => {
-    setPage("home");
-  };
-
-  const handleClickBackView = () => {
-    setPage("view");
-  };
-
-  const onClickEditBlog = (blog) => {
-    event.preventDefault();
-    setSelectedBlog(blog);
-    setPage("edit");
-  };
-  const onClickBlogContent = (blog) => {
-    setSelectedBlog(blog);
-    setPage("view");
-  };
-  // !
+  const postsRef = collection(db, "posts");
 
   const [data, setData] = useState([]);
-  const [selectedBlog, setSelectedBlog] = useState(null);
-  // const [newData, setNewData] = useState("");
-
+  const getData = async () => {
+    const data = [];
+    const querySnapshot = await getDocs(postsRef);
+    querySnapshot.forEach((doc) => {
+      data.push({
+        ...doc.data(),
+        id: doc.id,
+        createdAt: doc.data()?.createdAt?.toDate(),
+      });
+    });
+    setData(data);
+  };
   useEffect(() => {
-    fetchData();
+    getData();
   }, []);
 
-  // ! GET
-  const fetchData = async () => {
+  function handleClickBack() {
+    // Kembalikan ke halaman home
+    setPage("home");
+  }
+
+  async function handleCreate({ title, description, image }) {
+    const newData = {
+      title,
+      description,
+      image,
+      createdAt: Timestamp.now(),
+    };
+
     try {
-      const querySnapshot = await getDocs(collection(db, "blog"));
-      const dataList = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      // console.log(dataList[0]);
-      setData(dataList);
-    } catch (error) {
-      console.error("Error fetching data: ", error);
+      await addDoc(postsRef, newData);
+      getData();
+    } catch (e) {
+      console.error("Error adding document: ", e);
     }
-  };
-  // ! GET END
 
-  // ! PUSH
-  const addData = async (newData) => {
+    // Kembali ke halaman home
+    setPage("home");
+  }
+
+  async function handleOnClickDeleteCard(id) {
+    const docRef = doc(db, "posts", id);
     try {
-      let madeDataDate = new Date().toLocaleString();
-      newData.date = madeDataDate;
-      await addDoc(collection(db, "blog"), newData);
-      fetchData();
-    } catch (error) {
-      console.error("Error adding data: ", error);
+      await deleteDoc(docRef);
+      getData();
+    } catch (e) {
+      console.error("Error deleting document: ", e);
     }
-  };
-  // ! PUSH END
+  }
 
-  // ! DELETE
-  const deleteData = async (id) => {
+  function handleOnClickEditCard({ id }) {
+    setEditId(id);
+    setPage("edit");
+  }
+
+  async function handleEdit({ title, description, image, id }) {
+    const dataToEdit = {
+      title,
+      description,
+      image,
+    };
+
     try {
-      await deleteDoc(doc(db, "blog", id));
-      fetchData();
-    } catch (error) {
-      console.error("Error deleting data: ", error);
+      const docRef = doc(db, "posts", id);
+      await setDoc(docRef, dataToEdit);
+      setEditId(null);
+      getData();
+    } catch (e) {
+      console.error("Error updating document: ", e);
     }
-  };
-  // ! DELETE END
 
-  // ! UPDATE
-  const updateData = async (id, updatedText) => {
-    try {
-      await setDoc(doc(db, "blog", id), updatedText, { merge: true });
-      fetchData;
-      if (selectedBlog && selectedBlog.id === id) {
-        setSelectedBlog({ ...selectedBlog, ...updatedText });
-      }
-    } catch (error) {
-      console.error("Error fetching data: ", error);
-    }
-  };
-
-  const updateListBlog = async () => {
-    await fetchData();
-  };
-  // ! UPDATE END
-
-  // ! STORAGE UPLOAD IMAGE
-  const uploadImage = async (file) => {
-    if (!file) return null;
-    const storageRef = ref(storage, `/thumbnailimages-blog/${file.name}`);
-    await uploadBytes(storageRef, file);
-    const downloadURL = await getDownloadURL(storageRef);
-    return downloadURL;
-  };
-  // ! STORAGE UPLOAD IMAGE END
+    // Kembali ke halaman home
+    setPage("home");
+  }
 
   return (
-    <div className="font-montserrat">
+    <div>
       {page === "create" && (
         <CreateBlog
-          handleClickBack={handleClickBackHome}
-          addData={addData}
-          handleUpdate={updateData}
-          uploadImage={uploadImage}
+          // Pass props ke CreateBlog
+          // Props handleCreate dan handleClickBack adalah fungsi
+          // yang akan dijalankan di dalam Component CreateBlog
+          // Namun pembuatan fungsi tersebut dilakukan di dalam Component App
+          //  karena di dalam state yang akan diubah berada di dalam Component App
+          handleClickBack={handleClickBack}
+          handleCreate={handleCreate}
         />
       )}
-      {page === "edit" && (
-        <EditBlog
-          handleClickBackEdit={handleClickBackView}
-          updateData={updateData}
-          selectedBlog={selectedBlog}
-          handleAddData={addData}
-          uploadImage={uploadImage}
+      {page === "edit" && editId && (
+        <CreateBlog
+          // Pass props ke CreateBlog
+          // Props handleCreate dan handleClickBack adalah fungsi
+          // yang akan dijalankan di dalam Component CreateBlog
+          // Namun pembuatan fungsi tersebut dilakukan di dalam Component App
+          // karena di dalam state yang akan diubah berada di dalam Component App
+          handleClickBack={handleClickBack}
+          handleEdit={handleEdit}
+          defaultData={data.find((item) => item.id === editId)}
         />
       )}
-      {page === "view" && selectedBlog && (
+      {page === "view" && (
         <>
           <ViewBlog
-            handleClickBack={handleClickBackHome}
-            onClickEditBlog={() => onClickEditBlog(selectedBlog)}
-            blog={selectedBlog}
-            updateListBlog={updateListBlog}
-            deleteData={deleteData}
+            onClickBuatBlog={() => {
+              setPage("create");
+            }}
+            onClickTitle={() => {
+              setPage("home");
+            }}
+            data={{
+              id: viewId,
+            }}
+            onEdit={handleOnClickEditCard}
+            onDelete={(id) => {
+              handleOnClickDeleteCard(id);
+              setPage("home");
+            }}
           />
         </>
       )}
@@ -151,27 +147,21 @@ function App() {
             onClickBuatBlog={() => {
               setPage("create");
             }}
-            onClickBlogContent={onClickBlogContent}
+            onClickTitle={() => {
+              setPage("home");
+            }}
             data={data}
-            onClickEditBlog={onClickEditBlog}
-            updateData={updateData}
+            onClickCard={(id) => {
+              setViewId(id);
+              setPage("view");
+            }}
+            onDelete={handleOnClickDeleteCard}
+            onEdit={handleOnClickEditCard}
           />
         </>
       )}
-      {/* <SpeedInsights /> */}
     </div>
   );
 }
 
 export default App;
-
-// ! Cek koneksi firestore database
-// const docRef = doc(db, "blog", "R3iS5eckS995Gr69qBus")
-// const getData = async () => {
-//   const docSnap = await getDoc(docRef);
-//   console.log(docSnap.data())
-// }
-// useEffect(() => {
-//   getData();
-// }, []);
-// !

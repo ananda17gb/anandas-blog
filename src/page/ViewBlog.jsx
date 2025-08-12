@@ -1,79 +1,86 @@
 import PropTypes from "prop-types";
-import Back from "../components/back.jsx";
+import Header from "../components/Header";
+import { useEffect, useState } from "react";
+import { doc, getDoc } from "@firebase/firestore";
+import { db } from "../configs/firebase";
+import dayjs from "dayjs";
 
-export default function ViewBlog({
-  handleClickBack,
-  onClickEditBlog,
-  blog,
-  updateListBlog,
-  deleteData,
+function ViewBlog({
+  data: { id } = {},
+  onEdit,
+  onDelete,
+  onClickBuatBlog,
+  onClickTitle,
 }) {
-  const handleDeleteData = () => {
-    event.preventDefault();
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this data?"
-    );
-    if (confirmDelete) {
-      deleteData(blog.id);
-      handleClickBack();
-    }
-  };
-
-  const handleBackClick = () => {
-    updateListBlog();
-    handleClickBack();
-  };
-  const convertNewLinesToBreaks = (text) => {
-    return text.split("\n").map((item, index) => (
-      <span key={index} className="block">
-        {item}
-        <br />
-      </span>
-    ));
-  };
+  const [data, setData] = useState({});
+  const { image, title, description, createdAt } = data || {};
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await getDoc(doc(db, "posts", id));
+        setData({
+          ...response.data(),
+          id: response.id,
+          createdAt: response.data()?.createdAt?.toDate(),
+        });
+      } catch (e) {
+        console.error("Error fetching document: ", e);
+      }
+    };
+    fetchData();
+  }, [id]);
   return (
     <>
-      <Back handleClickBack={handleBackClick} />
-      <div className="bg-[#B4B4B4] flex mx-auto max-w-xl h-64 mt-9">
+      <Header onClickBuatBlog={onClickBuatBlog} onClickTitle={onClickTitle} />
+      <section className="max-w-[591px] w-full mx-auto mt-9">
         <img
-          src={blog.image}
-          alt={blog.title}
-          className="mx-auto object-cover"
+          src={image}
+          alt={title}
+          className="aspect-w-16 aspect-h-9 object-cover rounded mb-3"
         />
-      </div>
-      <div className="grid grid-cols-6 gap-2 mt-4 w-screen ">
-        <p className="col-start-3 pl-8 pr-8 text-xl font-bold block col-span-2 text-justify">
-          {blog.title}
-        </p>
-        <p className="col-start-3 row-start-2 ml-8">{blog.date}</p>
-        <div className="col-start-4 row-start-2 flex justify-end space-x-2 mr-8">
-          <a href="" className="hover:underline" onClick={onClickEditBlog}>
-            Edit
-          </a>
-          <span>|</span>
-          <a href="" className="hover:underline" onClick={handleDeleteData}>
-            Delete
-          </a>
-        </div>
-        <p className="col-start-3 col-span-2 ml-8 mr-8 overflow-auto pb-9 text-justify whitespace-pre-line indent-8">
-          {convertNewLinesToBreaks(blog.content)}
-        </p>
-      </div>
+        <h1 className="text-4xl font-bold mb-6">{title}</h1>
+        <section id="action" className="flex mb-6 justify-between">
+          <div>{createdAt ? dayjs(createdAt).format("DD MMMM YYYY") : "-"}</div>
+          <div className="flex gap-6">
+            <button
+              className="underline"
+              onClick={() => {
+                onEdit({
+                  title,
+                  description,
+                  image,
+                  id,
+                });
+              }}
+            >
+              Edit
+            </button>
+            <button
+              onClick={() => {
+                onDelete(id);
+              }}
+              className="underline"
+            >
+              Hapus
+            </button>
+          </div>
+        </section>
+        <section id="content" className="text-base">
+          {description}
+        </section>
+      </section>
     </>
   );
 }
 
 ViewBlog.propTypes = {
-  handleClickBack: PropTypes.func.isRequired,
-  onClickEditBlog: PropTypes.func.isRequired,
-  updateListBlog: PropTypes.func.isRequired,
-  deleteData: PropTypes.func.isRequired,
-  blog: PropTypes.shape({
+  data: PropTypes.shape({
     id: PropTypes.string.isRequired,
-    title: PropTypes.string.isRequired,
-    description: PropTypes.string.isRequired,
-    image: PropTypes.string,
-    date: PropTypes.string.isRequired,
-    content: PropTypes.string.isRequired,
   }).isRequired,
+  onEdit: PropTypes.func.isRequired,
+  onDelete: PropTypes.func.isRequired,
+  onClickBuatBlog: PropTypes.func.isRequired,
+  onClickTitle: PropTypes.func.isRequired,
 };
+
+export default ViewBlog;

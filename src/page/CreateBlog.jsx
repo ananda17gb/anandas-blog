@@ -1,111 +1,146 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import BackConfirm from "../components/backconfirm.jsx";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { uuidv4 } from "@firebase/util";
+import { storage } from "../configs/firebase";
 
-export default function CreateBlog({
+function CreateBlog({
+  handleCreate,
   handleClickBack,
-  addData,
-  handleUpdate,
-  uploadImage,
+  defaultData,
+  handleEdit,
 }) {
-  const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    content: "",
-    image: null,
-  });
+  const [title, setTitle] = useState();
+  const [description, setDescription] = useState();
+  // convert url to image
+  const [imageFile, setImage] = useState();
+  const [imageUrlPreview, setImageUrlPreview] = useState(
+    "https://source.unsplash.com/random"
+  );
 
-  const handleChange = (e) => {
-    const { name, value, files } = e.target;
-    if (files) {
-      setFormData({
-        ...formData,
-        [name]: files[0],
+  useEffect(() => {
+    const setData = async () => {
+      setTitle(defaultData.title);
+      setDescription(defaultData.description);
+      setImageUrlPreview(defaultData.image);
+    };
+    if (defaultData) {
+      setData();
+    }
+  }, [defaultData]);
+
+  // Cek apakah sedang dalam mode edit dengan melihat apakah ada data default id atau tidak
+  const isEdit = defaultData?.id;
+
+  async function handleOnClickConfirm() {
+    let image = imageUrlPreview;
+    if (imageFile) {
+      try {
+        const file = await uploadBytes(
+          ref(storage, `posts/image/${uuidv4()}`),
+          imageFile
+        );
+        image = await getDownloadURL(file.ref);
+      } catch (e) {
+        console.error("Error adding document: ", e);
+      }
+    }
+
+    if (isEdit) {
+      handleEdit({
+        title,
+        description,
+        image: image,
+        id: defaultData.id,
       });
     } else {
-      setFormData({
-        ...formData,
-        [name]: value,
+      handleCreate({
+        title,
+        description,
+        image: image,
       });
     }
-  };
-
-  const handleAddData = async () => {
-    let newFormData = { ...formData };
-
-    if (formData.image) {
-      const imageURL = await uploadImage(formData.image);
-      newFormData.image = imageURL; // Use `image` field instead of `imageURL`
-    }
-
-    await addData(newFormData); // Pass the correct formData
-    setFormData({
-      title: "",
-      description: "",
-      content: "",
-      image: null,
-    });
-  };
-
+  }
   return (
     <>
-      <BackConfirm
-        handleClickBack={handleClickBack}
-        handleAddData={handleAddData}
-        handleUpdate={handleUpdate}
-        isEdit={false}
-      />
-      <div className="grid grid-cols-3 gap-4 mt-16 min-w-min">
-        <form className="col-start-2 row-start-1">
-          <label className="text-4xl font-bold">Create Blog</label>
-          <hr className="mt-5 mb-10 border-1 border-[#0000004D]" />
-          <label className="text-2xl font-bold">Title</label>
-          <br />
+      <div className="flex justify-between pt-6 pb-6 pr-9 pl-9 border-b border-b-[rgba(0,0,0,0.3)]">
+        <button
+          onClick={() => {
+            handleClickBack();
+          }}
+          className="text-2xl font-semibold"
+        >
+          Kembali
+        </button>
+        <button
+          className="px-6 py-2 bg-blue-500 text-white rounded"
+          onClick={handleOnClickConfirm}
+        >
+          Confirm & {isEdit ? "Edit" : "Create"}
+        </button>
+      </div>
+      <section className="max-w-[591px] w-full mx-auto">
+        <div className="pb-4 mb-10 border-b border-b-[rgba(0,0,0,0.3)]">
+          <h1 className="text-4xl font-bold mt-16">Tambah Blog</h1>
+        </div>
+        <div>
+          <label className="text-base font-semibold mb-2 block">Judul</label>
           <input
-            type="text"
-            className="mt-2 mb-6 block flex-1 border-2 rounded bg-transparent py-1.5 pl-1 w-[630px] text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
-            placeholder="Blog title"
-            name="title"
-            value={formData.title}
-            onChange={handleChange}
+            placeholder="Masukkan judul blog"
+            onChange={(ev) => setTitle(ev.target.value)}
+            value={title}
+            className="border w-full h-10 rounded py-1 px-3"
           />
-          <label className="text-2xl font-bold">Description</label>
-          <br />
+        </div>
+        <div className="mt-6">
+          <label className="text-base font-semibold mb-2 block">Isi</label>
           <textarea
-            type="text"
-            className="mt-2 block flex-1 border-2 rounded bg-transparent py-1.5 pl-1 w-[630px] text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6 self-start"
-            placeholder="Blog description"
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
+            placeholder="Masukkan isi blog"
+            rows={4}
+            onChange={(ev) => setDescription(ev.target.value)}
+            value={description}
+            className="border w-full rounded py-1 px-3"
           />
-          <label className="text-2xl font-bold">Content</label>
-          <br />
-          <textarea
-            className="mt-2 block flex-1 border-2 rounded bg-transparent py-1.5 pl-1 w-[630px] text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6 self-start"
-            placeholder="Blog content"
-            name="content"
-            value={formData.content}
-            onChange={handleChange}
+        </div>
+        <div className="mt-6">
+          <label className="text-base font-semibold mb-2 block">Gambar</label>
+
+          <img
+            src={imageUrlPreview}
+            className="aspect-video object-cover rounded mb-3"
+            alt="preview"
           />
-          <label className="text-2xl font-bold">Thumbnail</label>
-          <br />
+
           <input
             type="file"
-            className="mt-2 mb-6 block flex-1 bg-transparent py-1.5 pl-1 w-[630px] text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
-            name="image"
-            onChange={handleChange}
-            accept=".jpg, .jpeg, .png"
+            accept="image/*"
+            onChange={(ev) => {
+              setImageUrlPreview(convertImageToUrl(ev.target.files[0]));
+              setImage(ev.target.files[0]);
+            }}
           />
-        </form>
-      </div>
+        </div>
+      </section>
     </>
   );
 }
 
+function convertImageToUrl(image) {
+  return image
+    ? URL.createObjectURL(image)
+    : "https://source.unsplash.com/random";
+}
+
 CreateBlog.propTypes = {
+  handleCreate: PropTypes.func,
   handleClickBack: PropTypes.func.isRequired,
-  addData: PropTypes.func.isRequired,
-  handleUpdate: PropTypes.func,
-  uploadImage: PropTypes.func,
+  defaultData: PropTypes.shape({
+    title: PropTypes.string,
+    description: PropTypes.string,
+    image: PropTypes.string,
+    id: PropTypes.number,
+  }),
+  handleEdit: PropTypes.func,
 };
+
+export default CreateBlog;
