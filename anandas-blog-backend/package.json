@@ -1,0 +1,25 @@
+{
+  "name": "anandas-blog-backend",
+  "version": "1.0.0",
+  "description": "Backend for anandas blog website",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ananda17gb/anandas-blog.git"
+  },
+  "keywords": [
+    "expressjs"
+  ],
+  "author": "ananda17gb",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ananda17gb/anandas-blog/issues"
+  },
+  "homepage": "https://github.com/ananda17gb/anandas-blog#readme",
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
