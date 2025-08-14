@@ -15,11 +15,19 @@ datasource db {
   directUrl= env("DIRECT_URL")
 }
 
+enum UserRole {
+    AUTHOR
+    ADMIN
+}
+
 model User {
   id Int @id @default(autoincrement())
   name String
-  email String
+  email String @unique
+  password String
   image String?
+  role UserRole @default(AUTHOR)
+  blogs Blog[]
   createdAt DateTime @default(now())
   updateAt DateTime @updatedAt
 }
@@ -28,7 +36,7 @@ model Blog {
   id Int @id @default(autoincrement())
   title String
   content String[]
-  author String
+  author User @relation(fields: [authorId], references: [id])
   authorId Int
   images String[]
   published Boolean @default(false)
